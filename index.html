@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>RWA Yield Calculator — RWA Intelligence</title>
+<meta name="description" content="Calculate your expected returns from tokenized European real estate. Starting from €100."/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Syne:wght@400;500;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#0e0e0c;--ink2:#4a4a46;--ink3:#8a8a84;--ink4:#b8b8b0;
+  --paper:#f5f3ee;--paper2:#eceae3;--paper3:#e2e0d8;--white:#ffffff;
+  --purple:#4a42b0;--purple-l:#eeedfd;--purple-d:#322c80;
+  --teal:#1a9470;--teal-l:#e0f4ee;
+  --amber:#b87010;--amber-l:#faecd8;
+  --up:#1a6e40;--up-bg:#e4f2eb;
+  --r:14px;--r-sm:8px;--r-lg:20px;
+  --shadow:0 2px 12px rgba(0,0,0,0.07);
+}
+html{font-size:15px;scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);min-height:100vh;-webkit-font-smoothing:antialiased}
+.page{max-width:960px;margin:0 auto;padding:32px 20px 64px}
+
+.header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:48px;gap:16px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px}
+.brand-mark{width:36px;height:36px;border-radius:10px;background:var(--ink);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.brand-mark svg{width:18px;height:18px}
+.brand-name{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:var(--ink);letter-spacing:-0.01em}
+.brand-sub{font-family:'DM Mono',monospace;font-size:10px;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin-top:1px}
+.header-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.header-badge{font-family:'DM Mono',monospace;font-size:10px;font-weight:500;background:var(--up-bg);color:var(--up);padding:5px 12px;border-radius:20px;text-transform:uppercase;letter-spacing:.05em;white-space:nowrap}
+
+.lang-toggle{display:flex;background:var(--paper2);border-radius:20px;padding:3px;border:1px solid var(--paper3);gap:2px}
+.lang-btn{font-family:'DM Mono',monospace;font-size:11px;font-weight:500;padding:5px 14px;border-radius:16px;border:none;background:transparent;color:var(--ink3);cursor:pointer;transition:all .2s;letter-spacing:.02em}
+.lang-btn.active{background:var(--white);color:var(--ink);box-shadow:0 1px 4px rgba(0,0,0,0.1)}
+
+.hero{margin-bottom:40px;animation:fadeUp .5s ease both}
+.hero-eyebrow{font-family:'DM Mono',monospace;font-size:11px;color:var(--purple);text-transform:uppercase;letter-spacing:.1em;margin-bottom:12px}
+.hero-title{font-family:'Syne',sans-serif;font-size:clamp(28px,5vw,44px);font-weight:800;line-height:1.1;letter-spacing:-0.03em;color:var(--ink);margin-bottom:14px}
+.hero-title span{color:var(--purple)}
+.hero-desc{font-size:16px;color:var(--ink2);line-height:1.65;max-width:560px}
+
+.main-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;animation:fadeUp .5s ease .1s both}
+@media(max-width:680px){.main-grid{grid-template-columns:1fr}}
+
+.card{background:var(--white);border:1px solid var(--paper3);border-radius:var(--r-lg);padding:24px;box-shadow:var(--shadow)}
+.card-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:600;color:var(--ink);letter-spacing:-0.01em;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between}
+.card-badge{font-family:'DM Mono',monospace;font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:.05em;padding:2px 8px;border-radius:10px}
+
+.input-group{margin-bottom:20px}
+.input-group:last-child{margin-bottom:0}
+.input-label{font-family:'DM Mono',monospace;font-size:10px;font-weight:500;color:var(--ink3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px;display:block}
+.input-row{display:flex;align-items:center}
+.input-prefix{font-family:'DM Mono',monospace;font-size:16px;font-weight:500;color:var(--ink2);background:var(--paper2);border:1px solid var(--paper3);border-right:none;padding:0 14px;height:48px;display:flex;align-items:center;border-radius:var(--r-sm) 0 0 var(--r-sm);user-select:none}
+.input-field{flex:1;height:48px;font-family:'DM Mono',monospace;font-size:18px;font-weight:500;color:var(--ink);background:var(--white);border:1px solid var(--paper3);border-radius:0 var(--r-sm) var(--r-sm) 0;padding:0 16px;outline:none;transition:border-color .15s;-moz-appearance:textfield}
+.input-field::-webkit-outer-spin-button,.input-field::-webkit-inner-spin-button{-webkit-appearance:none}
+.input-field:focus{border-color:var(--purple)}
+.slider-wrap{margin-top:10px}
+input[type=range]{width:100%;height:4px;-webkit-appearance:none;appearance:none;background:var(--paper2);border-radius:2px;outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--purple);border:2px solid var(--white);box-shadow:0 1px 4px rgba(0,0,0,0.15);transition:transform .1s}
+input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.15)}
+.slider-labels{display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:10px;color:var(--ink4);margin-top:5px}
+
+.city-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}
+.city-btn{border:1px solid var(--paper3);border-radius:var(--r-sm);padding:10px 12px;background:var(--white);cursor:pointer;transition:all .15s;text-align:left}
+.city-btn:hover{background:var(--paper)}
+.city-btn.active{border-color:var(--purple);background:var(--purple-l)}
+.city-btn-name{font-family:'Syne',sans-serif;font-size:12px;font-weight:600;color:var(--ink);display:block;margin-bottom:2px}
+.city-btn.active .city-btn-name{color:var(--purple-d)}
+.city-btn-yield{font-family:'DM Mono',monospace;font-size:10px;color:var(--ink3)}
+.city-btn.active .city-btn-yield{color:var(--purple)}
+
+.dur-tabs{display:flex;gap:6px;flex-wrap:wrap}
+.dur-tab{font-family:'DM Mono',monospace;font-size:11px;font-weight:500;padding:6px 14px;border-radius:20px;border:1px solid var(--paper3);background:var(--white);color:var(--ink2);cursor:pointer;transition:all .15s;text-transform:uppercase;letter-spacing:.04em}
+.dur-tab:hover{border-color:var(--ink3)}
+.dur-tab.active{background:var(--ink);color:var(--white);border-color:var(--ink)}
+
+.results-card{background:var(--ink);border-radius:var(--r-lg);padding:28px;margin-bottom:16px;position:relative;overflow:hidden;animation:fadeUp .5s ease .2s both}
+.results-card::before{content:'';position:absolute;top:-60px;right:-60px;width:200px;height:200px;border-radius:50%;background:rgba(74,66,176,0.15)}
+.results-eyebrow{font-family:'DM Mono',monospace;font-size:10px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:.08em;margin-bottom:20px}
+.results-main{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:24px}
+@media(max-width:480px){.results-main{grid-template-columns:1fr 1fr}}
+.result-item-label{font-family:'DM Mono',monospace;font-size:10px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.result-item-value{font-family:'Syne',sans-serif;font-size:clamp(20px,3vw,28px);font-weight:700;color:#fff;letter-spacing:-0.02em;line-height:1}
+.result-item-value.accent{color:#7eefc7}
+.result-item-sub{font-family:'DM Mono',monospace;font-size:10px;color:rgba(255,255,255,0.35);margin-top:4px}
+.dark-bar-wrap{background:rgba(255,255,255,0.08);border-radius:4px;height:6px;overflow:hidden;margin-bottom:8px}
+.dark-bar-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,#4a42b0,#7eefc7);transition:width .6s cubic-bezier(.4,0,.2,1)}
+.dark-bar-labels{display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:10px;color:rgba(255,255,255,0.3)}
+
+.breakdown{margin-bottom:16px}
+.breakdown-row{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--paper3)}
+.breakdown-row:first-child{padding-top:0}
+.breakdown-row:last-child{border:none;padding-bottom:0}
+.br-left{display:flex;align-items:center;gap:10px}
+.br-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.br-name{font-size:13px;font-weight:500;color:var(--ink)}
+.br-sub{font-family:'DM Mono',monospace;font-size:10px;color:var(--ink3);margin-top:1px}
+.br-right{text-align:right}
+.br-val{font-family:'DM Mono',monospace;font-size:13px;font-weight:500;color:var(--up)}
+.br-tokens{font-family:'DM Mono',monospace;font-size:10px;color:var(--ink3);margin-top:1px}
+
+.cta-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+@media(max-width:480px){.cta-row{grid-template-columns:1fr}}
+.cta-btn{display:flex;align-items:center;justify-content:center;gap:8px;padding:14px 20px;border-radius:var(--r);font-family:'Syne',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;border:none;letter-spacing:-0.01em}
+.cta-primary{background:var(--purple);color:#fff}
+.cta-primary:hover{background:var(--purple-d)}
+.cta-secondary{background:var(--white);color:var(--ink);border:1px solid var(--paper3)}
+.cta-secondary:hover{background:var(--paper)}
+.cta-icon{width:16px;height:16px;flex-shrink:0}
+
+.disclaimer{background:var(--amber-l);border:1px solid #e8c870;border-radius:var(--r);padding:14px 16px;font-size:12px;color:#7a5a10;line-height:1.6;margin-bottom:16px}
+.disclaimer strong{font-weight:500;color:#5a3e08}
+
+.info-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:32px}
+@media(max-width:600px){.info-grid{grid-template-columns:1fr}}
+.info-card{background:var(--white);border:1px solid var(--paper3);border-radius:var(--r);padding:16px}
+.info-card-num{font-family:'Syne',sans-serif;font-size:22px;font-weight:700;color:var(--purple);letter-spacing:-0.02em;margin-bottom:4px}
+.info-card-label{font-size:12px;color:var(--ink2);line-height:1.4}
+
+.footer{padding-top:24px;border-top:1px solid var(--paper3);display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap}
+.footer-name{font-family:'Syne',sans-serif;font-size:13px;font-weight:600;color:var(--ink)}
+.footer-meta{font-family:'DM Mono',monospace;font-size:10px;color:var(--ink3);margin-top:3px;text-transform:uppercase;letter-spacing:.04em}
+.footer-right{font-family:'DM Mono',monospace;font-size:10px;color:var(--ink4);text-align:right;text-transform:uppercase;letter-spacing:.03em;line-height:1.6}
+
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--ink);color:#fff;font-family:'DM Mono',monospace;font-size:12px;padding:10px 20px;border-radius:20px;opacity:0;transition:all .3s;pointer-events:none;white-space:nowrap;z-index:999}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header class="header">
+    <div class="brand">
+      <div class="brand-mark">
+        <svg viewBox="0 0 18 18" fill="none">
+          <rect x="1" y="1" width="7" height="7" rx="2" fill="white" opacity=".9"/>
+          <rect x="10" y="1" width="7" height="7" rx="2" fill="white" opacity=".45"/>
+          <rect x="1" y="10" width="7" height="7" rx="2" fill="white" opacity=".45"/>
+          <rect x="10" y="10" width="7" height="7" rx="2" fill="white" opacity=".9"/>
+        </svg>
+      </div>
+      <div>
+        <div class="brand-name">RWA Intelligence</div>
+        <div class="brand-sub" id="brandSub"></div>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="header-badge" id="headerBadge"></div>
+      <div class="lang-toggle">
+        <button class="lang-btn active" id="btnZh" onclick="setLang('zh')">中文</button>
+        <button class="lang-btn" id="btnEn" onclick="setLang('en')">EN</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="hero">
+    <div class="hero-eyebrow" id="heroEyebrow"></div>
+    <h1 class="hero-title" id="heroTitle"></h1>
+    <p class="hero-desc" id="heroDesc"></p>
+  </div>
+
+  <div class="main-grid">
+    <div class="card">
+      <div class="card-title">
+        <span id="labelAmount"></span>
+        <span class="card-badge" style="background:var(--purple-l);color:var(--purple-d)" id="badgeRequired"></span>
+      </div>
+      <div class="input-group">
+        <label class="input-label" id="labelAmountEur"></label>
+        <div class="input-row">
+          <div class="input-prefix">€</div>
+          <input class="input-field" type="number" id="amount" value="1000" min="100" max="1000000" step="100" oninput="sync('amount')">
+        </div>
+        <div class="slider-wrap">
+          <input type="range" id="amountSlider" min="100" max="50000" step="100" value="1000" oninput="sync('slider')">
+          <div class="slider-labels"><span>€100</span><span>€10k</span><span>€50k</span></div>
+        </div>
+      </div>
+      <div class="input-group">
+        <label class="input-label" id="labelDuration"></label>
+        <div class="dur-tabs">
+          <button class="dur-tab" data-yr="1" onclick="setDur(1)" id="dur1"></button>
+          <button class="dur-tab active" data-yr="3" onclick="setDur(3)" id="dur3"></button>
+          <button class="dur-tab" data-yr="5" onclick="setDur(5)" id="dur5"></button>
+          <button class="dur-tab" data-yr="10" onclick="setDur(10)" id="dur10"></button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">
+        <span id="labelCity"></span>
+        <span class="card-badge" style="background:var(--teal-l);color:#085041" id="badgeMarket"></span>
+      </div>
+      <div class="city-grid" id="cityGrid"></div>
+    </div>
+  </div>
+
+  <div class="results-card">
+    <div class="results-eyebrow" id="resultsEyebrow"></div>
+    <div class="results-main">
+      <div class="result-item">
+        <div class="result-item-label" id="labelTotal"></div>
+        <div class="result-item-value accent" id="rTotal">—</div>
+        <div class="result-item-sub" id="rTotalSub"></div>
+      </div>
+      <div class="result-item">
+        <div class="result-item-label" id="labelMonthly"></div>
+        <div class="result-item-value" id="rMonthly">—</div>
+        <div class="result-item-sub" id="rMonthlySub"></div>
+      </div>
+      <div class="result-item">
+        <div class="result-item-label" id="labelTokens"></div>
+        <div class="result-item-value" id="rTokens">—</div>
+        <div class="result-item-sub" id="rTokensSub"></div>
+      </div>
+    </div>
+    <div class="dark-bar-wrap">
+      <div class="dark-bar-fill" id="progressBar" style="width:0%"></div>
+    </div>
+    <div class="dark-bar-labels">
+      <span id="barLeft"></span>
+      <span id="barRight"></span>
+    </div>
+  </div>
+
+  <div class="card breakdown">
+    <div class="card-title" id="labelBreakdown"></div>
+    <div id="breakdownList"></div>
+  </div>
+
+  <div class="cta-row">
+    <button class="cta-btn cta-primary" onclick="shareResult()">
+      <svg class="cta-icon" viewBox="0 0 16 16" fill="none"><path d="M8 2v8M4 6l4-4 4 4M3 12h10" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span id="btnShare"></span>
+    </button>
+    <button class="cta-btn cta-secondary" onclick="copyLink()">
+      <svg class="cta-icon" viewBox="0 0 16 16" fill="none"><rect x="5" y="5" width="8" height="9" rx="1.5" stroke="currentColor" stroke-width="1.5"/><path d="M3 11V3a1 1 0 011-1h7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <span id="btnCopy"></span>
+    </button>
+  </div>
+
+  <div class="disclaimer" id="disclaimerBox"></div>
+
+  <div class="info-grid">
+    <div class="info-card"><div class="info-card-num">$24B</div><div class="info-card-label" id="info1"></div></div>
+    <div class="info-card"><div class="info-card-num">€100</div><div class="info-card-label" id="info2"></div></div>
+    <div class="info-card"><div class="info-card-num">86%</div><div class="info-card-label" id="info3"></div></div>
+  </div>
+
+  <footer class="footer">
+    <div>
+      <div class="footer-name">Hongteng Shen</div>
+      <div class="footer-meta" id="footerMeta"></div>
+    </div>
+    <div class="footer-right" id="footerRight"></div>
+  </footer>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const T = {
+  zh:{
+    brandSub:'收益计算器 · Yield Calculator',
+    headerBadge:'MiCA 合规 · 实时估算',
+    heroEyebrow:'Real World Assets · Tokenization',
+    heroTitle:'你的欧洲房产<br><span>收益是多少？</span>',
+    heroDesc:'输入投资金额，立即查看欧洲主要城市代币化房产的预期年收益、月分红，以及你持有的 token 数量。从 €100 起投，无需银行，无需中介。',
+    labelAmount:'投资金额',badgeRequired:'必填',labelAmountEur:'投资金额 (EUR)',
+    labelDuration:'投资期限',dur:['1年','3年','5年','10年'],
+    labelCity:'选择城市',badgeMarket:'欧洲市场',
+    labelTotal:'预期总回报',labelMonthly:'月均分红',labelTokens:'持有 Token 数',
+    labelBreakdown:'各城市收益对比',btnShare:'分享结果',btnCopy:'复制链接',
+    disclaimer:'<strong>风险提示：</strong>以上数据为基于市场历史数据的估算，不构成投资建议。代币化房产存在市场风险，二级市场流动性有限，部分法律结构尚未经过法院验证。投资前请阅读完整项目文件，建议作为多元化组合的补充，而非全部资金。如有项目承诺"保证收益"，请立即远离。',
+    info1:'2025年全球 RWA 市场规模，3年增长 308%',
+    info2:'最低投资门槛，欧洲 MiCA 合规平台',
+    info3:'机构投资者已涉足或计划涉足 RWA',
+    footerMeta:'MSc Strategy & Digital Transformation · IÉSEG Paris · Web3 Content',
+    footerRight:'RWA Intelligence · Report Series<br>数据来源：BCG · Ripple · Deloitte · McKinsey · 2026年3月',
+    toastShare:'✓ 已复制分享文案',toastCopy:'✓ 链接已复制',toastFail:'请手动复制浏览器地址栏',
+    rTotalSub:p=>`+${p}% 总回报率`,rMonthlySub:v=>`年收益 ${v}`,
+    rTokensSub:p=>`持有 ${p}% 房产份额`,tokenLabel:'€1 / token',
+    barLeft:v=>`本金 ${v}`,barRight:(v,p)=>`收益 ${v} (+${p}%)`,
+    eyebrow:(fl,n,y,yr)=>`${fl} ${n} · ${y}% 年化 · ${yr}年期估算`,
+    cityYield:(y,d)=>`${y}% / 年 · ${d}`,activeBadge:'当前',
+    brSub:(d,y)=>`${d} · ${y}% 年化`,brMo:v=>`${v}/月`,
+    shareText:(a,fl,n,tot,mo,url)=>`💡 我用 RWA Intelligence 计算了一下：\n投资 €${a.toLocaleString()} 在 ${fl}${n} 代币化房产\n预期收益 ${tot}，月均分红 ${mo}\n\n👉 算一算你的收益：${url}`,
+  },
+  en:{
+    brandSub:'Yield Calculator',
+    headerBadge:'MiCA Compliant · Live Estimates',
+    heroEyebrow:'Real World Assets · Tokenization',
+    heroTitle:'What are your European<br><span>real estate returns?</span>',
+    heroDesc:'Enter your investment and instantly see expected annual yield, monthly income, and token holdings from tokenized European real estate. Starting from €100 — no bank, no broker.',
+    labelAmount:'Investment amount',badgeRequired:'Required',labelAmountEur:'Amount (EUR)',
+    labelDuration:'Time horizon',dur:['1 yr','3 yrs','5 yrs','10 yrs'],
+    labelCity:'Choose city',badgeMarket:'European market',
+    labelTotal:'Total return',labelMonthly:'Monthly income',labelTokens:'Tokens held',
+    labelBreakdown:'City comparison',btnShare:'Share result',btnCopy:'Copy link',
+    disclaimer:'<strong>Risk notice:</strong> Figures are estimates based on historical market data and do not constitute investment advice. Tokenized real estate carries market risk; secondary market liquidity is limited and some legal structures have not been court-tested. Read full project documentation before investing. Treat as a portfolio complement, not your entire savings. Walk away from any project promising "guaranteed returns".',
+    info1:'Global RWA market in 2025, up 308% in 3 years',
+    info2:'Minimum investment on MiCA-compliant EU platforms',
+    info3:'Institutional investors already in or planning RWA exposure',
+    footerMeta:'MSc Strategy & Digital Transformation · IÉSEG Paris · Web3 Content',
+    footerRight:'RWA Intelligence · Report Series<br>Sources: BCG · Ripple · Deloitte · McKinsey · March 2026',
+    toastShare:'✓ Share text copied',toastCopy:'✓ Link copied',toastFail:'Please copy the URL manually',
+    rTotalSub:p=>`+${p}% total ROI`,rMonthlySub:v=>`Annual yield ${v}`,
+    rTokensSub:p=>`${p}% property share`,tokenLabel:'€1 / token',
+    barLeft:v=>`Principal ${v}`,barRight:(v,p)=>`Yield ${v} (+${p}%)`,
+    eyebrow:(fl,n,y,yr)=>`${fl} ${n} · ${y}% p.a. · ${yr}-yr estimate`,
+    cityYield:(y,d)=>`${y}% / yr · ${d}`,activeBadge:'Selected',
+    brSub:(d,y)=>`${d} · ${y}% yield`,brMo:v=>`${v} / mo`,
+    shareText:(a,fl,n,tot,mo,url)=>`💡 I just calculated my RWA returns:\n€${a.toLocaleString()} in ${fl} ${n} tokenized real estate\nExpected return: ${tot} — monthly: ${mo}\n\n👉 Calculate yours: ${url}`,
+  }
+};
+
+const CITIES=[
+  {id:'paris',     zh:'巴黎',        en:'Paris',      flag:'🇫🇷',yield:6.8,dzh:'商业办公',den:'Commercial', color:'#4a42b0'},
+  {id:'berlin',    zh:'柏林',        en:'Berlin',     flag:'🇩🇪',yield:5.9,dzh:'物流仓储',den:'Logistics',  color:'#1a9470'},
+  {id:'lisbon',    zh:'里斯本',      en:'Lisbon',     flag:'🇵🇹',yield:7.2,dzh:'住宅公寓',den:'Residential',color:'#b87010'},
+  {id:'amsterdam', zh:'阿姆斯特丹', en:'Amsterdam',  flag:'🇳🇱',yield:6.1,dzh:'混合用途',den:'Mixed-use',  color:'#c03820'},
+  {id:'madrid',    zh:'马德里',      en:'Madrid',     flag:'🇪🇸',yield:5.5,dzh:'零售商业',den:'Retail',     color:'#6b3db0'},
+  {id:'milan',     zh:'米兰',        en:'Milan',      flag:'🇮🇹',yield:4.8,dzh:'政府债券',den:'Gov. Bond',  color:'#2a6e8a'},
+];
+
+let state={amount:1000,years:3,cityId:'paris',lang:'zh'};
+
+function setLang(lang){
+  state.lang=lang;
+  document.documentElement.lang=lang;
+  document.getElementById('btnZh').classList.toggle('active',lang==='zh');
+  document.getElementById('btnEn').classList.toggle('active',lang==='en');
+  const t=T[lang];
+  const plain=['brandSub','headerBadge','heroDesc','labelAmount','badgeRequired',
+    'labelAmountEur','labelDuration','labelCity','badgeMarket','labelTotal',
+    'labelMonthly','labelTokens','labelBreakdown','btnShare','btnCopy',
+    'info1','info2','info3','footerMeta'];
+  plain.forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=t[id];});
+  document.getElementById('heroTitle').innerHTML=t.heroTitle;
+  document.getElementById('heroEyebrow').textContent=t.heroEyebrow;
+  document.getElementById('disclaimerBox').innerHTML=t.disclaimer;
+  document.getElementById('footerRight').innerHTML=t.footerRight;
+  [1,3,5,10].forEach((d,i)=>{document.getElementById('dur'+d).textContent=t.dur[i];});
+  buildCities();render();
+}
+
+function buildCities(){
+  const t=T[state.lang];
+  document.getElementById('cityGrid').innerHTML=CITIES.map(c=>{
+    const name=state.lang==='zh'?c.zh:c.en;
+    const desc=state.lang==='zh'?c.dzh:c.den;
+    return `<button class="city-btn ${c.id===state.cityId?'active':''}" onclick="setCity('${c.id}')" id="city-${c.id}">
+      <span class="city-btn-name">${c.flag} ${name}</span>
+      <span class="city-btn-yield">${t.cityYield(c.yield,desc)}</span>
+    </button>`;
+  }).join('');
+}
+
+function sync(src){
+  const inp=document.getElementById('amount');
+  const sl=document.getElementById('amountSlider');
+  if(src==='amount'){let v=parseInt(inp.value)||100;v=Math.max(100,Math.min(1000000,v));state.amount=v;sl.value=Math.min(v,50000);}
+  else{state.amount=parseInt(sl.value);inp.value=state.amount;}
+  render();
+}
+function setDur(y){
+  state.years=y;
+  document.querySelectorAll('.dur-tab').forEach(b=>b.classList.toggle('active',parseInt(b.dataset.yr)===y));
+  render();
+}
+function setCity(id){
+  state.cityId=id;
+  document.querySelectorAll('.city-btn').forEach(b=>b.classList.remove('active'));
+  const el=document.getElementById('city-'+id);if(el)el.classList.add('active');
+  render();
+}
+
+function calc(amount,yp,years){
+  const annual=amount*(yp/100),total=annual*years,monthly=annual/12;
+  return{annual,total,monthly,tokens:amount,roi:(total/amount)*100};
+}
+function fmt(n){
+  if(n>=10000)return'€'+(n/1000).toFixed(1)+'k';
+  if(n>=1000)return'€'+n.toLocaleString('de-DE',{minimumFractionDigits:0,maximumFractionDigits:0});
+  return'€'+n.toFixed(2);
+}
+
+function render(){
+  const t=T[state.lang];
+  const city=CITIES.find(c=>c.id===state.cityId);
+  const r=calc(state.amount,city.yield,state.years);
+  const name=state.lang==='zh'?city.zh:city.en;
+  const desc=state.lang==='zh'?city.dzh:city.den;
+
+  document.getElementById('resultsEyebrow').textContent=t.eyebrow(city.flag,name,city.yield,state.years);
+  document.getElementById('rTotal').textContent=fmt(r.total);
+  document.getElementById('rTotalSub').textContent=t.rTotalSub(r.roi.toFixed(1));
+  document.getElementById('rMonthly').textContent=fmt(r.monthly);
+  document.getElementById('rMonthlySub').textContent=t.rMonthlySub(fmt(r.annual));
+  document.getElementById('rTokens').textContent=r.tokens.toLocaleString();
+  document.getElementById('rTokensSub').textContent=t.rTokensSub(((r.tokens/2000000)*100).toFixed(4));
+  document.getElementById('progressBar').style.width=Math.min((r.roi/100)*60+10,85)+'%';
+  document.getElementById('barLeft').textContent=t.barLeft(fmt(state.amount));
+  document.getElementById('barRight').textContent=t.barRight(fmt(r.total),r.roi.toFixed(0));
+
+  const sorted=[...CITIES].sort((a,b)=>b.yield-a.yield);
+  document.getElementById('breakdownList').innerHTML=sorted.map(c=>{
+    const cr=calc(state.amount,c.yield,state.years);
+    const cname=state.lang==='zh'?c.zh:c.en;
+    const cdesc=state.lang==='zh'?c.dzh:c.den;
+    const isA=c.id===state.cityId;
+    const badge=isA?`<span style="font-family:'DM Mono',monospace;font-size:9px;background:var(--purple);color:white;padding:1px 6px;border-radius:8px;margin-left:6px;vertical-align:middle">${t.activeBadge}</span>`:'';
+    return`<div class="breakdown-row" style="${isA?'background:var(--purple-l);margin:0 -24px;padding:11px 24px;border-radius:8px':''}">
+      <div class="br-left">
+        <div class="br-dot" style="background:${c.color}"></div>
+        <div>
+          <div class="br-name">${c.flag} ${cname}${badge}</div>
+          <div class="br-sub">${t.brSub(cdesc,c.yield)}</div>
+        </div>
+      </div>
+      <div class="br-right">
+        <div class="br-val">${fmt(cr.total)}</div>
+        <div class="br-tokens">${t.brMo(fmt(cr.monthly))}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function shareResult(){
+  const t=T[state.lang];
+  const city=CITIES.find(c=>c.id===state.cityId);
+  const r=calc(state.amount,city.yield,state.years);
+  const name=state.lang==='zh'?city.zh:city.en;
+  const text=t.shareText(state.amount,city.flag,name,fmt(r.total),fmt(r.monthly),window.location.href);
+  if(navigator.share){navigator.share({title:'RWA Intelligence',text,url:window.location.href});}
+  else{navigator.clipboard.writeText(text).then(()=>showToast(t.toastShare));}
+}
+function copyLink(){
+  const t=T[state.lang];
+  navigator.clipboard.writeText(window.location.href).then(()=>showToast(t.toastCopy)).catch(()=>showToast(t.toastFail));
+}
+function showToast(msg){
+  const el=document.getElementById('toast');el.textContent=msg;
+  el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2500);
+}
+
+setLang('zh');
+</script>
+</body>
+</html>
