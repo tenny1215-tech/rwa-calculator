@@ -133,7 +133,7 @@
   </div>
 
   <div class="reports-grid reveal">
-    <a class="report-card" href="#">
+    <div class="report-card" onclick="openReport('rwa1.jpg','Vol. I — Your Next Property Starts at \u20ac100')">
       <div class="report-bg-num">01</div>
       <div class="report-vol">Vol. I · March 2026</div>
       <div class="report-title">Your Next Property Starts at €100</div>
@@ -144,8 +144,8 @@
           <svg viewBox="0 0 14 14" fill="none"><path d="M2 7h10M7 2l5 5-5 5" stroke="white" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </div>
       </div>
-    </a>
-    <a class="report-card" href="#">
+    </div>
+    <div class="report-card" onclick="openReport('rwa2.jpg','Vol. II — Why China Cannot Do Tokenization')">
       <div class="report-bg-num">02</div>
       <div class="report-vol">Vol. II · March 2026</div>
       <div class="report-title">Why China Can't Do Tokenization</div>
@@ -156,8 +156,8 @@
           <svg viewBox="0 0 14 14" fill="none"><path d="M2 7h10M7 2l5 5-5 5" stroke="white" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </div>
       </div>
-    </a>
-    <a class="report-card" href="#">
+    </div>
+    <div class="report-card" onclick="openReport('rwa3.jpg','Vol. III — Europe: The Real Opportunity')">
       <div class="report-bg-num">03</div>
       <div class="report-vol">Vol. III · March 2026</div>
       <div class="report-title">Europe: The Real Opportunity</div>
@@ -168,9 +168,31 @@
           <svg viewBox="0 0 14 14" fill="none"><path d="M2 7h10M7 2l5 5-5 5" stroke="white" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </div>
       </div>
-    </a>
+    </div>
   </div>
 </section>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox" onclick="closeReport()">
+  <div class="lb-inner" onclick="event.stopPropagation()">
+    <div class="lb-header">
+      <span class="lb-title" id="lbTitle"></span>
+      <button class="lb-close" onclick="closeReport()">
+        <svg viewBox="0 0 14 14" fill="none"><path d="M1 1l12 12M13 1L1 13" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <div class="lb-img-wrap">
+      <img class="lb-img" id="lbImg" src="" alt="RWA Report"/>
+    </div>
+    <div class="lb-footer">
+      <span class="lb-hint">Click outside or press ESC to close</span>
+      <a class="lb-download" id="lbDownload" href="#" download>
+        <svg viewBox="0 0 14 14" fill="none"><path d="M7 1v8M3 9l4 4 4-4M1 13h12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Download
+      </a>
+    </div>
+  </div>
+</div>
 
 <div class="calc-section" id="calculator">
   <div class="calc-banner reveal">
@@ -212,5 +234,78 @@
 </footer>
 
 <script src="main.js"></script>
+<style>
+.report-card{cursor:pointer}
+.lightbox{
+  display:none;position:fixed;inset:0;z-index:1000;
+  background:rgba(0,0,0,0.92);
+  align-items:center;justify-content:center;
+  padding:20px;
+  backdrop-filter:blur(8px);
+}
+.lightbox.open{display:flex}
+.lb-inner{
+  max-width:1100px;width:100%;
+  display:flex;flex-direction:column;gap:16px;
+  animation:lbIn .25s ease;
+}
+@keyframes lbIn{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:scale(1)}}
+.lb-header{
+  display:flex;align-items:center;justify-content:space-between;
+}
+.lb-title{
+  font-family:'DM Mono',monospace;font-size:12px;
+  color:rgba(255,255,255,0.5);letter-spacing:.08em;text-transform:uppercase;
+}
+.lb-close{
+  width:36px;height:36px;border-radius:50%;
+  border:1px solid rgba(255,255,255,0.2);background:transparent;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:background .15s;
+}
+.lb-close:hover{background:rgba(255,255,255,0.1)}
+.lb-close svg{width:12px;height:12px}
+.lb-img-wrap{
+  border-radius:8px;overflow:hidden;
+  max-height:80vh;display:flex;align-items:center;justify-content:center;
+}
+.lb-img{
+  width:100%;height:auto;max-height:78vh;
+  object-fit:contain;border-radius:8px;
+  display:block;
+}
+.lb-footer{
+  display:flex;align-items:center;justify-content:space-between;
+}
+.lb-hint{
+  font-family:'DM Mono',monospace;font-size:10px;
+  color:rgba(255,255,255,0.25);letter-spacing:.06em;
+}
+.lb-download{
+  display:flex;align-items:center;gap:6px;
+  font-family:'DM Mono',monospace;font-size:11px;font-weight:500;
+  color:var(--accent);text-decoration:none;
+  letter-spacing:.06em;text-transform:uppercase;
+  transition:opacity .15s;
+}
+.lb-download:hover{opacity:.7}
+.lb-download svg{width:13px;height:13px}
+</style>
+<script>
+function openReport(img, title) {
+  document.getElementById('lbImg').src = img;
+  document.getElementById('lbTitle').textContent = title;
+  document.getElementById('lbDownload').href = img;
+  document.getElementById('lightbox').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeReport() {
+  document.getElementById('lightbox').classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeReport();
+});
+</script>
 </body>
 </html>
