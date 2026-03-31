@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>RWA Yield Calculator — RWA Intelligence</title>
+<meta name="description" content="Calculate your expected returns from tokenized European real estate. Starting from €100."/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800&family=IBM+Plex+Mono:wght@300;400;500&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-4YDBL68VCG"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-4YDBL68VCG');
+</script>
+<link rel="stylesheet" href="style.css">
+<style>
+/* Calculator-specific overrides — light theme on top of style.css dark vars */
+:root{
+  --ink:#0a0e1a;--ink2:#3d4560;--ink3:#7a82a0;--ink4:#b0b6cc;
+  --paper:#f6f7fb;--paper2:#eceef5;--paper3:#dde0ec;--white:#ffffff;
+  --blue:#1a56e8;--blue-d:#1240c0;--blue-l:#eaf0fd;
+  --teal:#0d9e7a;--teal-l:#e0f5ef;
+  --amber:#c47a0a;--amber-l:#fef3d8;
+  --up:#0a7a3e;--up-bg:#e0f5ea;
+  --r:12px;--r-sm:8px;--r-lg:16px;
+  --shadow:0 1px 3px rgba(10,14,26,0.07),0 4px 16px rgba(10,14,26,0.05);
+  --f-head:'Plus Jakarta Sans','Noto Sans SC',sans-serif;
+  --f-body:'Plus Jakarta Sans','Noto Sans SC',sans-serif;
+  --f-mono:'IBM Plex Mono',monospace;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:15px;scroll-behavior:smooth}
+body{
+  font-family:var(--f-body);
+  background:var(--paper);
+  color:var(--ink);
+  min-height:100vh;
+  -webkit-font-smoothing:antialiased;
+  cursor:auto;
+}
+/* Reset all homepage dark styles */
+body::before{display:none}
+.cursor,.cursor-ring{display:none}
+nav{display:none}
+.hero{
+  min-height:unset !important;
+  display:block !important;
+  padding:0 !important;
+  position:relative;
+  overflow:visible;
+  margin-bottom:36px;
+  animation:fadeUp .45s ease both;
+}
+.hero-grid,.orb,.scroll-hint{display:none !important}
+.hero-title{
+  font-family:var(--f-head) !important;
+  font-size:clamp(26px,4.5vw,42px) !important;
+  font-weight:800 !important;
+  line-height:1.12 !important;
+  letter-spacing:-0.03em !important;
+  color:var(--ink) !important;
+  margin-bottom:16px !important;
+}
+.hero-title span{color:var(--blue) !important}
+.hero-title .line-dim{color:var(--ink) !important}
+.hero-title .line-accent{color:var(--blue) !important}
+.hero-bottom{display:block !important;opacity:1 !important;animation:none !important}
+.hero-eyebrow{
+  font-family:var(--f-mono) !important;
+  font-size:11px !important;
+  color:var(--blue) !important;
+  text-transform:uppercase !important;
+  letter-spacing:.12em !important;
+  margin-bottom:14px !important;
+  font-weight:400 !important;
+  opacity:1 !important;
+  animation:none !important;
+}
+.hero-desc{
+  font-size:15.5px !important;
+  font-weight:400 !important;
+  color:var(--ink2) !important;
+  line-height:1.7 !important;
+  max-width:540px !important;
+}
+.stats-bar,.ticker-wrap,.reports-grid,.report-card,.calc-banner,
+.calc-section,.section-header,.section-title,.section-tag{display:none !important}
+
+/* Back nav */
+.calc-nav{
+  background:var(--white);
+  border-bottom:1px solid var(--paper3);
+  padding:14px 20px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.back-link{
+  display:flex;align-items:center;gap:8px;
+  font-family:var(--f-mono);font-size:11px;
+  color:var(--ink2);text-decoration:none;
+  letter-spacing:.04em;text-transform:uppercase;
+  transition:color .15s;
+}
+.back-link:hover{color:var(--blue)}
+.back-link svg{width:14px;height:14px}
+.calc-nav-brand{
+  font-family:var(--f-head);font-size:13px;font-weight:700;
+  color:var(--ink);letter-spacing:-0.01em;
+}
+
+.page{max-width:980px;margin:0 auto;padding:32px 20px 72px}
+.header{display:flex;align-items:center;justify-content:space-between;margin-bottom:48px;gap:16px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:11px}
+.brand-mark{width:38px;height:38px;border-radius:10px;background:var(--ink);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.brand-mark svg{width:18px;height:18px}
+.brand-name{font-family:var(--f-head);font-size:15px;font-weight:700;color:var(--ink);letter-spacing:-0.02em}
+.brand-sub{font-family:var(--f-mono);font-size:10px;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin-top:1px}
+.header-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.header-badge{font-family:var(--f-mono);font-size:10px;font-weight:500;background:var(--up-bg);color:var(--up);padding:5px 13px;border-radius:20px;letter-spacing:.05em;text-transform:uppercase;white-space:nowrap}
+.lang-toggle{display:flex;background:var(--paper2);border-radius:20px;padding:3px;border:1px solid var(--paper3);gap:2px}
+.lang-btn{font-family:var(--f-mono);font-size:11px;font-weight:500;padding:5px 14px;border-radius:16px;border:none;background:transparent;color:var(--ink3);cursor:pointer;transition:all .2s;letter-spacing:.02em}
+.lang-btn.active{background:var(--white);color:var(--ink);box-shadow:0 1px 4px rgba(10,14,26,0.12)}
+.hero{margin-bottom:36px;animation:fadeUp .45s ease both;min-height:unset !important}
+.hero-eyebrow{font-family:var(--f-mono);font-size:11px;color:var(--blue);text-transform:uppercase;letter-spacing:.12em;margin-bottom:14px;font-weight:400}
+.hero-title{font-family:var(--f-head);font-size:clamp(26px,4.5vw,42px);font-weight:800;line-height:1.12;letter-spacing:-0.03em;color:var(--ink);margin-bottom:16px}
+.hero-title span{color:var(--blue)}
+.hero-desc{font-size:15.5px;font-weight:400;color:var(--ink2);line-height:1.7;max-width:540px}
+.main-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;animation:fadeUp .45s ease .08s both}
+@media(max-width:680px){.main-grid{grid-template-columns:1fr}}
+.card{background:var(--white);border:1px solid var(--paper3);border-radius:var(--r-lg);padding:22px 24px;box-shadow:var(--shadow)}
+.card-title{font-family:var(--f-head);font-size:13px;font-weight:600;color:var(--ink);letter-spacing:-0.01em;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between}
+.card-badge{font-family:var(--f-mono);font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:.06em;padding:2px 8px;border-radius:10px}
+.badge-purple{background:var(--blue-l);color:var(--blue-d)}
+.badge-teal{background:var(--teal-l);color:#065f46}
+.input-group{margin-bottom:20px}
+.input-group:last-child{margin-bottom:0}
+.input-label{font-family:var(--f-mono);font-size:10px;font-weight:500;color:var(--ink3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;display:block}
+.input-row{display:flex;align-items:center}
+.input-prefix{font-family:var(--f-mono);font-size:16px;font-weight:500;color:var(--ink2);background:var(--paper2);border:1px solid var(--paper3);border-right:none;padding:0 14px;height:48px;display:flex;align-items:center;border-radius:var(--r-sm) 0 0 var(--r-sm);user-select:none}
+.input-field{flex:1;height:48px;font-family:var(--f-mono);font-size:18px;font-weight:500;color:var(--ink);background:var(--white);border:1px solid var(--paper3);border-radius:0 var(--r-sm) var(--r-sm) 0;padding:0 16px;outline:none;transition:border-color .15s;-moz-appearance:textfield}
+.input-field::-webkit-outer-spin-button,.input-field::-webkit-inner-spin-button{-webkit-appearance:none}
+.input-field:focus{border-color:var(--blue)}
+.slider-wrap{margin-top:10px}
+input[type=range]{width:100%;height:4px;-webkit-appearance:none;appearance:none;background:var(--paper2);border-radius:2px;outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--blue);border:2px solid var(--white);box-shadow:0 1px 4px rgba(26,86,232,0.3);transition:transform .1s}
+input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.15)}
+.slider-labels{display:flex;justify-content:space-between;font-family:var(--f-mono);font-size:10px;color:var(--ink4);margin-top:5px}
+.city-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}
+.city-btn{border:1px solid var(--paper3);border-radius:var(--r-sm);padding:10px 12px;background:var(--white);cursor:pointer;transition:all .15s;text-align:left}
+.city-btn:hover{background:var(--paper)}
+.city-btn.active{border-color:var(--blue);background:var(--blue-l)}
+.city-btn-name{font-family:var(--f-head);font-size:12px;font-weight:600;color:var(--ink);display:block;margin-bottom:2px;letter-spacing:-0.01em}
+.city-btn.active .city-btn-name{color:var(--blue-d)}
+.city-btn-yield{font-family:var(--f-mono);font-size:10px;color:var(--ink3)}
+.city-btn.active .city-btn-yield{color:var(--blue)}
+.dur-tabs{display:flex;gap:6px;flex-wrap:wrap}
+.dur-tab{font-family:var(--f-mono);font-size:11px;font-weight:500;padding:6px 16px;border-radius:20px;border:1px solid var(--paper3);background:var(--white);color:var(--ink2);cursor:pointer;transition:all .15s;letter-spacing:.03em}
+.dur-tab:hover{border-color:var(--blue);color:var(--blue)}
+.dur-tab.active{background:var(--ink);color:var(--white);border-color:var(--ink)}
+.results-card{background:var(--ink);border-radius:var(--r-lg);padding:28px 30px;margin-bottom:14px;position:relative;overflow:hidden;animation:fadeUp .45s ease .16s both}
+.results-card::before{content:'';position:absolute;top:-80px;right:-80px;width:260px;height:260px;border-radius:50%;background:rgba(26,86,232,0.12)}
+.results-card::after{content:'';position:absolute;bottom:-40px;left:40%;width:180px;height:180px;border-radius:50%;background:rgba(13,158,122,0.08)}
+.results-eyebrow{font-family:var(--f-mono);font-size:10px;color:rgba(255,255,255,0.38);text-transform:uppercase;letter-spacing:.09em;margin-bottom:22px;position:relative;z-index:1}
+.results-main{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:26px;position:relative;z-index:1}
+@media(max-width:480px){.results-main{grid-template-columns:1fr 1fr}}
+.result-item-label{font-family:var(--f-mono);font-size:10px;color:rgba(255,255,255,0.38);text-transform:uppercase;letter-spacing:.07em;margin-bottom:7px}
+.result-item-value{font-family:var(--f-head);font-size:clamp(20px,2.8vw,30px);font-weight:700;color:#fff;letter-spacing:-0.025em;line-height:1}
+.result-item-value.accent{color:#5de8c0}
+.result-item-sub{font-family:var(--f-mono);font-size:10px;color:rgba(255,255,255,0.32);margin-top:5px}
+.dark-bar-wrap{background:rgba(255,255,255,0.07);border-radius:4px;height:5px;overflow:hidden;margin-bottom:8px;position:relative;z-index:1}
+.dark-bar-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,#1a56e8,#5de8c0);transition:width .55s cubic-bezier(.4,0,.2,1)}
+.dark-bar-labels{display:flex;justify-content:space-between;font-family:var(--f-mono);font-size:10px;color:rgba(255,255,255,0.28);position:relative;z-index:1}
+.breakdown{margin-bottom:14px}
+.breakdown-row{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--paper3)}
+.breakdown-row:first-child{padding-top:0}
+.breakdown-row:last-child{border:none;padding-bottom:0}
+.br-left{display:flex;align-items:center;gap:10px}
+.br-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.br-name{font-size:13px;font-weight:600;color:var(--ink);letter-spacing:-0.01em}
+.br-sub{font-family:var(--f-mono);font-size:10px;color:var(--ink3);margin-top:1px}
+.br-right{text-align:right}
+.br-val{font-family:var(--f-mono);font-size:13px;font-weight:500;color:var(--up)}
+.br-tokens{font-family:var(--f-mono);font-size:10px;color:var(--ink3);margin-top:1px}
+.cta-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+@media(max-width:480px){.cta-row{grid-template-columns:1fr}}
+.cta-btn{display:flex;align-items:center;justify-content:center;gap:8px;padding:14px 20px;border-radius:var(--r);font-family:var(--f-head);font-size:13px;font-weight:700;cursor:pointer;transition:all .15s;border:none;letter-spacing:-0.01em;text-decoration:none}
+.cta-primary{background:var(--blue);color:#fff}
+.cta-primary:hover{background:var(--blue-d)}
+.cta-secondary{background:var(--white);color:var(--ink);border:1px solid var(--paper3)}
+.cta-secondary:hover{background:var(--paper)}
+.cta-icon{width:16px;height:16px;flex-shrink:0}
+.disclaimer{background:var(--amber-l);border:1px solid #f0d080;border-radius:var(--r);padding:14px 16px;font-size:12px;color:#7a5200;line-height:1.65;margin-bottom:14px}
+.disclaimer strong{font-weight:600;color:#5a3800}
+.info-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:32px}
+@media(max-width:600px){.info-grid{grid-template-columns:1fr}}
+.info-card{background:var(--white);border:1px solid var(--paper3);border-radius:var(--r);padding:18px;box-shadow:var(--shadow)}
+.info-num{font-family:var(--f-head);font-size:24px;font-weight:800;color:var(--blue);letter-spacing:-0.03em;margin-bottom:5px}
+.info-label{font-size:12px;color:var(--ink2);line-height:1.5;font-weight:400}
+.footer{padding-top:24px;border-top:1px solid var(--paper3);display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap}
+.footer-name{font-family:var(--f-head);font-size:13px;font-weight:700;color:var(--ink);letter-spacing:-0.01em}
+.footer-meta{font-family:var(--f-mono);font-size:10px;color:var(--ink3);margin-top:3px;text-transform:uppercase;letter-spacing:.05em}
+.footer-right{font-family:var(--f-mono);font-size:10px;color:var(--ink4);text-align:right;text-transform:uppercase;letter-spacing:.03em;line-height:1.7}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--ink);color:#fff;font-family:var(--f-mono);font-size:12px;padding:10px 20px;border-radius:20px;opacity:0;transition:all .28s;pointer-events:none;white-space:nowrap;z-index:999}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+</style>
+</head>
+<body>
+
+<div class="calc-nav">
+  <a class="back-link" href="index.html">
+    <svg viewBox="0 0 14 14" fill="none"><path d="M9 2L4 7l5 5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    Back to Home
+  </a>
+  <div class="calc-nav-brand">RWA Intelligence</div>
+</div>
+
+<div class="page">
+  <header class="header">
+    <div class="brand">
+      <div class="brand-mark">
+        <svg viewBox="0 0 18 18" fill="none">
+          <rect x="1" y="1" width="7" height="7" rx="2" fill="white" opacity=".9"/>
+          <rect x="10" y="1" width="7" height="7" rx="2" fill="white" opacity=".45"/>
+          <rect x="1" y="10" width="7" height="7" rx="2" fill="white" opacity=".45"/>
+          <rect x="10" y="10" width="7" height="7" rx="2" fill="white" opacity=".9"/>
+        </svg>
+      </div>
+      <div>
+        <div class="brand-name">RWA Intelligence</div>
+        <div class="brand-sub" id="brandSub"></div>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="header-badge" id="headerBadge"></div>
+      <div class="lang-toggle">
+        <button class="lang-btn active" id="btnZh" onclick="setLang('zh')">中文</button>
+        <button class="lang-btn" id="btnEn" onclick="setLang('en')">EN</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="hero">
+    <div class="hero-eyebrow" id="heroEyebrow"></div>
+    <h1 class="hero-title" id="heroTitle"></h1>
+    <p class="hero-desc" id="heroDesc"></p>
+  </div>
+
+  <div class="main-grid">
+    <div class="card">
+      <div class="card-title">
+        <span id="labelAmount"></span>
+        <span class="card-badge badge-purple" id="badgeRequired"></span>
+      </div>
+      <div class="input-group">
+        <label class="input-label" id="labelAmountEur"></label>
+        <div class="input-row">
+          <div class="input-prefix">€</div>
+          <input class="input-field" type="number" id="amount" value="1000" min="100" max="1000000" step="100" oninput="sync('amount')">
+        </div>
+        <div class="slider-wrap">
+          <input type="range" id="amountSlider" min="100" max="50000" step="100" value="1000" oninput="sync('slider')">
+          <div class="slider-labels"><span>€100</span><span>€10k</span><span>€50k</span></div>
+        </div>
+      </div>
+      <div class="input-group">
+        <label class="input-label" id="labelDuration"></label>
+        <div class="dur-tabs">
+          <button class="dur-tab" data-yr="1" onclick="setDur(1)" id="dur1"></button>
+          <button class="dur-tab active" data-yr="3" onclick="setDur(3)" id="dur3"></button>
+          <button class="dur-tab" data-yr="5" onclick="setDur(5)" id="dur5"></button>
+          <button class="dur-tab" data-yr="10" onclick="setDur(10)" id="dur10"></button>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">
+        <span id="labelCity"></span>
+        <span class="card-badge badge-teal" id="badgeMarket"></span>
+      </div>
+      <div class="city-grid" id="cityGrid"></div>
+    </div>
+  </div>
+
+  <div class="results-card">
+    <div class="results-eyebrow" id="resultsEyebrow"></div>
+    <div class="results-main">
+      <div class="result-item">
+        <div class="result-item-label" id="labelTotal"></div>
+        <div class="result-item-value accent" id="rTotal">—</div>
+        <div class="result-item-sub" id="rTotalSub"></div>
+      </div>
+      <div class="result-item">
+        <div class="result-item-label" id="labelMonthly"></div>
+        <div class="result-item-value" id="rMonthly">—</div>
+        <div class="result-item-sub" id="rMonthlySub"></div>
+      </div>
+      <div class="result-item">
+        <div class="result-item-label" id="labelTokens"></div>
+        <div class="result-item-value" id="rTokens">—</div>
+        <div class="result-item-sub" id="rTokensSub"></div>
+      </div>
+    </div>
+    <div class="dark-bar-wrap">
+      <div class="dark-bar-fill" id="progressBar" style="width:0%"></div>
+    </div>
+    <div class="dark-bar-labels">
+      <span id="barLeft"></span>
+      <span id="barRight"></span>
+    </div>
+  </div>
+
+  <div class="card breakdown">
+    <div class="card-title" id="labelBreakdown"></div>
+    <div id="breakdownList"></div>
+  </div>
+
+  <div class="cta-row">
+    <button class="cta-btn cta-primary" onclick="shareResult()">
+      <svg class="cta-icon" viewBox="0 0 16 16" fill="none"><path d="M8 2v8M4 6l4-4 4 4M3 12h10" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span id="btnShare"></span>
+    </button>
+    <button class="cta-btn cta-secondary" onclick="copyLink()">
+      <svg class="cta-icon" viewBox="0 0 16 16" fill="none"><rect x="5" y="5" width="8" height="9" rx="1.5" stroke="currentColor" stroke-width="1.5"/><path d="M3 11V3a1 1 0 011-1h7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <span id="btnCopy"></span>
+    </button>
+  </div>
+
+  <div class="disclaimer" id="disclaimerBox"></div>
+
+  <div class="info-grid">
+    <div class="info-card"><div class="info-num">$24B</div><div class="info-label" id="info1"></div></div>
+    <div class="info-card"><div class="info-num">€100</div><div class="info-label" id="info2"></div></div>
+    <div class="info-card"><div class="info-num">86%</div><div class="info-label" id="info3"></div></div>
+  </div>
+
+  <footer class="footer">
+    <div>
+      <div class="footer-name">Hongteng Shen</div>
+      <div class="footer-meta" id="footerMeta"></div>
+    </div>
+    <div class="footer-right" id="footerRight"></div>
+  </footer>
+</div>
+
+<div class="toast" id="toast"></div>
+<script src="app.js"></script>
+</body>
+</html>

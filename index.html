@@ -1,13 +1,12 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="en">
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>RWA Yield Calculator — RWA Intelligence</title>
-<meta name="description" content="Calculate your expected returns from tokenized European real estate. Starting from €100."/>
+<title>RWA Intelligence — The Real World Asset Research Platform</title>
+<meta name="description" content="The leading research platform for Real World Asset tokenization. Reports, data, and tools for the next generation of investors."/>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800&family=IBM+Plex+Mono:wght@300;400;500&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@300;400;500&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-4YDBL68VCG"></script>
 <script>
@@ -16,139 +15,202 @@
   gtag('js', new Date());
   gtag('config', 'G-4YDBL68VCG');
 </script>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div class="page">
 
-  <header class="header">
-    <div class="brand">
-      <div class="brand-mark">
-        <svg viewBox="0 0 18 18" fill="none">
-          <rect x="1" y="1" width="7" height="7" rx="2" fill="white" opacity=".9"/>
-          <rect x="10" y="1" width="7" height="7" rx="2" fill="white" opacity=".45"/>
-          <rect x="1" y="10" width="7" height="7" rx="2" fill="white" opacity=".45"/>
-          <rect x="10" y="10" width="7" height="7" rx="2" fill="white" opacity=".9"/>
-        </svg>
-      </div>
-      <div>
-        <div class="brand-name">RWA Intelligence</div>
-        <div class="brand-sub" id="brandSub"></div>
-      </div>
-    </div>
-    <div class="header-right">
-      <div class="header-badge" id="headerBadge"></div>
-      <div class="lang-toggle">
-        <button class="lang-btn active" id="btnZh" onclick="setLang('zh')">中文</button>
-        <button class="lang-btn" id="btnEn" onclick="setLang('en')">EN</button>
-      </div>
-    </div>
-  </header>
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
 
-  <div class="hero">
-    <div class="hero-eyebrow" id="heroEyebrow"></div>
-    <h1 class="hero-title" id="heroTitle"></h1>
-    <p class="hero-desc" id="heroDesc"></p>
+<nav>
+  <a class="nav-logo" href="index.html">
+    <div class="nav-logo-mark">
+      <svg viewBox="0 0 16 16" fill="none">
+        <rect x="1" y="1" width="6" height="6" rx="1.5" fill="#080a0f"/>
+        <rect x="9" y="1" width="6" height="6" rx="1.5" fill="#080a0f" opacity=".5"/>
+        <rect x="1" y="9" width="6" height="6" rx="1.5" fill="#080a0f" opacity=".5"/>
+        <rect x="9" y="9" width="6" height="6" rx="1.5" fill="#080a0f"/>
+      </svg>
+    </div>
+    <div class="nav-brand">RWA Intelligence</div>
+  </a>
+  <div class="nav-links">
+    <a class="nav-link" href="#reports">Reports</a>
+    <a class="nav-link" href="calculator.html">Calculator</a>
+    <a class="nav-link" href="#stats">Markets</a>
+    <a class="nav-link" href="#footer">About</a>
   </div>
+  <a class="nav-cta" href="calculator.html">Try Calculator →</a>
+</nav>
 
-  <div class="main-grid">
-    <div class="card">
-      <div class="card-title">
-        <span id="labelAmount"></span>
-        <span class="card-badge badge-purple" id="badgeRequired"></span>
-      </div>
-      <div class="input-group">
-        <label class="input-label" id="labelAmountEur"></label>
-        <div class="input-row">
-          <div class="input-prefix">€</div>
-          <input class="input-field" type="number" id="amount" value="1000" min="100" max="1000000" step="100" oninput="sync('amount')">
-        </div>
-        <div class="slider-wrap">
-          <input type="range" id="amountSlider" min="100" max="50000" step="100" value="1000" oninput="sync('slider')">
-          <div class="slider-labels"><span>€100</span><span>€10k</span><span>€50k</span></div>
-        </div>
-      </div>
-      <div class="input-group">
-        <label class="input-label" id="labelDuration"></label>
-        <div class="dur-tabs">
-          <button class="dur-tab" data-yr="1" onclick="setDur(1)" id="dur1"></button>
-          <button class="dur-tab active" data-yr="3" onclick="setDur(3)" id="dur3"></button>
-          <button class="dur-tab" data-yr="5" onclick="setDur(5)" id="dur5"></button>
-          <button class="dur-tab" data-yr="10" onclick="setDur(10)" id="dur10"></button>
-        </div>
-      </div>
-    </div>
+<div class="hero">
+  <div class="hero-grid"></div>
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+  <div class="orb orb3"></div>
 
-    <div class="card">
-      <div class="card-title">
-        <span id="labelCity"></span>
-        <span class="card-badge badge-teal" id="badgeMarket"></span>
-      </div>
-      <div class="city-grid" id="cityGrid"></div>
+  <div class="hero-eyebrow">Real World Assets · Tokenization · Vol. I–III</div>
+  <h1 class="hero-title">
+    <span class="line-dim">Reimagining</span><br>
+    Real <span class="line-accent">Asset</span><br>
+    Intelligence
+  </h1>
+  <div class="hero-bottom">
+    <p class="hero-desc">
+      The <strong>leading research platform</strong> for Real World Asset tokenization.
+      Data-driven reports, tools, and analysis for the next generation of global investors.
+      From €100 to institutional scale.
+    </p>
+    <div class="hero-actions">
+      <a class="btn btn-primary" href="#reports">
+        <svg viewBox="0 0 14 14" fill="none"><path d="M7 1v8M3 5l4-4 4 4M1 12h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Read Reports
+      </a>
+      <a class="btn btn-ghost" href="calculator.html">Yield Calculator</a>
     </div>
   </div>
 
-  <div class="results-card">
-    <div class="results-eyebrow" id="resultsEyebrow"></div>
-    <div class="results-main">
-      <div class="result-item">
-        <div class="result-item-label" id="labelTotal"></div>
-        <div class="result-item-value accent" id="rTotal">—</div>
-        <div class="result-item-sub" id="rTotalSub"></div>
-      </div>
-      <div class="result-item">
-        <div class="result-item-label" id="labelMonthly"></div>
-        <div class="result-item-value" id="rMonthly">—</div>
-        <div class="result-item-sub" id="rMonthlySub"></div>
-      </div>
-      <div class="result-item">
-        <div class="result-item-label" id="labelTokens"></div>
-        <div class="result-item-value" id="rTokens">—</div>
-        <div class="result-item-sub" id="rTokensSub"></div>
-      </div>
-    </div>
-    <div class="dark-bar-wrap">
-      <div class="dark-bar-fill" id="progressBar" style="width:0%"></div>
-    </div>
-    <div class="dark-bar-labels">
-      <span id="barLeft"></span>
-      <span id="barRight"></span>
-    </div>
+  <div class="scroll-hint">
+    <div class="scroll-line"></div>
+    <span>Scroll</span>
   </div>
-
-  <div class="card breakdown">
-    <div class="card-title" id="labelBreakdown"></div>
-    <div id="breakdownList"></div>
-  </div>
-
-  <div class="cta-row">
-    <button class="cta-btn cta-primary" onclick="shareResult()">
-      <svg class="cta-icon" viewBox="0 0 16 16" fill="none"><path d="M8 2v8M4 6l4-4 4 4M3 12h10" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      <span id="btnShare"></span>
-    </button>
-    <button class="cta-btn cta-secondary" onclick="copyLink()">
-      <svg class="cta-icon" viewBox="0 0 16 16" fill="none"><rect x="5" y="5" width="8" height="9" rx="1.5" stroke="currentColor" stroke-width="1.5"/><path d="M3 11V3a1 1 0 011-1h7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-      <span id="btnCopy"></span>
-    </button>
-  </div>
-
-  <div class="disclaimer" id="disclaimerBox"></div>
-
-  <div class="info-grid">
-    <div class="info-card"><div class="info-num">$24B</div><div class="info-label" id="info1"></div></div>
-    <div class="info-card"><div class="info-num">€100</div><div class="info-label" id="info2"></div></div>
-    <div class="info-card"><div class="info-num">86%</div><div class="info-label" id="info3"></div></div>
-  </div>
-
-  <footer class="footer">
-    <div>
-      <div class="footer-name">Hongteng Shen</div>
-      <div class="footer-meta" id="footerMeta"></div>
-    </div>
-    <div class="footer-right" id="footerRight"></div>
-  </footer>
-
 </div>
-<div class="toast" id="toast"></div>
-<script src="app.js"></script>
+
+<div class="ticker-wrap">
+  <div class="ticker-track" id="ticker">
+    <div class="ticker-item"><span class="ticker-label">RWA Market 2025</span><span class="ticker-val up">$24B</span></div>
+    <div class="ticker-item"><span class="ticker-label">3-Year Growth</span><span class="ticker-val up">+308%</span></div>
+    <div class="ticker-item"><span class="ticker-label">BCG Forecast 2030</span><span class="ticker-val">$3T</span></div>
+    <div class="ticker-item"><span class="ticker-label">Institutional Exposure</span><span class="ticker-val up">86%</span></div>
+    <div class="ticker-item"><span class="ticker-label">Paris Office Yield</span><span class="ticker-val up">6.8%</span></div>
+    <div class="ticker-item"><span class="ticker-label">Lisbon Residential</span><span class="ticker-val up">7.2%</span></div>
+    <div class="ticker-item"><span class="ticker-label">EU MiCA Status</span><span class="ticker-val up">LIVE</span></div>
+    <div class="ticker-item"><span class="ticker-label">Min. Investment</span><span class="ticker-val">€100</span></div>
+    <div class="ticker-item"><span class="ticker-label">Berlin Logistics</span><span class="ticker-val up">5.9%</span></div>
+    <div class="ticker-item"><span class="ticker-label">Amsterdam Mixed</span><span class="ticker-val up">6.1%</span></div>
+    <div class="ticker-item"><span class="ticker-label">RWA Market 2025</span><span class="ticker-val up">$24B</span></div>
+    <div class="ticker-item"><span class="ticker-label">3-Year Growth</span><span class="ticker-val up">+308%</span></div>
+    <div class="ticker-item"><span class="ticker-label">BCG Forecast 2030</span><span class="ticker-val">$3T</span></div>
+    <div class="ticker-item"><span class="ticker-label">Institutional Exposure</span><span class="ticker-val up">86%</span></div>
+    <div class="ticker-item"><span class="ticker-label">Paris Office Yield</span><span class="ticker-val up">6.8%</span></div>
+    <div class="ticker-item"><span class="ticker-label">Lisbon Residential</span><span class="ticker-val up">7.2%</span></div>
+    <div class="ticker-item"><span class="ticker-label">EU MiCA Status</span><span class="ticker-val up">LIVE</span></div>
+    <div class="ticker-item"><span class="ticker-label">Min. Investment</span><span class="ticker-val">€100</span></div>
+    <div class="ticker-item"><span class="ticker-label">Berlin Logistics</span><span class="ticker-val up">5.9%</span></div>
+    <div class="ticker-item"><span class="ticker-label">Amsterdam Mixed</span><span class="ticker-val up">6.1%</span></div>
+  </div>
+</div>
+
+<div class="stats-bar reveal" id="stats">
+  <div class="stat">
+    <div class="stat-num"><span class="counter accent" data-target="24">0</span><span class="accent">B</span></div>
+    <div class="stat-label">Global RWA market<br>size in 2025</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num"><span class="counter" data-target="308">0</span><span style="color:var(--accent)">%</span></div>
+    <div class="stat-label">Market growth<br>over 3 years</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num" style="color:var(--dim)">$<span class="counter" data-target="3">0</span>T</div>
+    <div class="stat-label">BCG forecast<br>by 2030</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num"><span class="counter" data-target="86">0</span><span style="color:var(--accent)">%</span></div>
+    <div class="stat-label">Institutions exposed<br>or planning to</div>
+  </div>
+</div>
+
+<section id="reports">
+  <div class="section-header reveal">
+    <div>
+      <div class="section-tag">Research Series</div>
+      <div class="section-title">Three volumes.<br>One vision.</div>
+    </div>
+    <a class="section-link" href="#">
+      All reports
+      <svg viewBox="0 0 12 12" fill="none"><path d="M2 6h8M6 2l4 4-4 4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </a>
+  </div>
+
+  <div class="reports-grid reveal">
+    <a class="report-card" href="#">
+      <div class="report-bg-num">01</div>
+      <div class="report-vol">Vol. I · March 2026</div>
+      <div class="report-title">Your Next Property Starts at €100</div>
+      <div class="report-desc">A beginner's guide to real estate tokenization. Understand this, and you're already ahead of 90% of investors. The fundamentals of RWA explained.</div>
+      <div class="report-footer">
+        <span class="report-tag">Fundamentals · Beginner</span>
+        <div class="report-arrow">
+          <svg viewBox="0 0 14 14" fill="none"><path d="M2 7h10M7 2l5 5-5 5" stroke="white" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+      </div>
+    </a>
+    <a class="report-card" href="#">
+      <div class="report-bg-num">02</div>
+      <div class="report-vol">Vol. II · March 2026</div>
+      <div class="report-title">Why China Can't Do Tokenization</div>
+      <div class="report-desc">It's not a technology problem — it's a deep political and economic logic. Four structural walls that make domestic RWA unsolvable in the near term.</div>
+      <div class="report-footer">
+        <span class="report-tag">Policy · China · Advanced</span>
+        <div class="report-arrow">
+          <svg viewBox="0 0 14 14" fill="none"><path d="M2 7h10M7 2l5 5-5 5" stroke="white" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+      </div>
+    </a>
+    <a class="report-card" href="#">
+      <div class="report-bg-num">03</div>
+      <div class="report-vol">Vol. III · March 2026</div>
+      <div class="report-title">Europe: The Real Opportunity</div>
+      <div class="report-desc">Compliant, transparent, low-barrier — a massive opportunity that almost nobody is serving in Chinese. Why Europe wins, and how to start investing.</div>
+      <div class="report-footer">
+        <span class="report-tag">Europe · Strategy · Action</span>
+        <div class="report-arrow">
+          <svg viewBox="0 0 14 14" fill="none"><path d="M2 7h10M7 2l5 5-5 5" stroke="white" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+      </div>
+    </a>
+  </div>
+</section>
+
+<div class="calc-section" id="calculator">
+  <div class="calc-banner reveal">
+    <div class="calc-left">
+      <div class="calc-tag">Interactive Tool</div>
+      <div class="calc-title">Calculate Your<br><span style="color:var(--accent)">Real Returns</span></div>
+      <p class="calc-desc">Enter your investment amount and instantly see expected yields across 6 European cities. Paris, Berlin, Lisbon, Amsterdam and more — in Chinese or English.</p>
+      <div style="margin-top:28px;display:flex;gap:12px;flex-wrap:wrap">
+        <a class="btn btn-primary" href="calculator.html">
+          Open Calculator
+          <svg viewBox="0 0 14 14" fill="none"><path d="M2 7h10M7 2l5 5-5 5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+        <a class="btn btn-ghost" href="calculator.html">中文版 →</a>
+      </div>
+    </div>
+    <div class="calc-right">
+      <div class="calc-preview">
+        <div class="calc-preview-label">Paris 8th · 3-year estimate</div>
+        <div class="calc-preview-num">€2,040</div>
+        <div class="calc-preview-sub">on €10,000 invested · 6.8% p.a.</div>
+        <div class="calc-preview-bar">
+          <div class="calc-preview-fill"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer id="footer">
+  <div class="footer-left">
+    <div class="footer-brand">RWA Intelligence</div>
+    <div class="footer-sub">Hongteng Shen · MSc Strategy & Digital Transformation · IÉSEG Paris</div>
+  </div>
+  <div class="footer-right">
+    Report Series · Vol. I–III<br>
+    Sources: BCG · Ripple · Deloitte · McKinsey · March 2026<br>
+    © 2026 RWA Intelligence. All rights reserved.
+  </div>
+</footer>
+
+<script src="main.js"></script>
 </body>
 </html>
